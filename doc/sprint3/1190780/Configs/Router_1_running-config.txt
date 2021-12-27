@@ -1,0 +1,194 @@
+!
+version 15.1
+no service timestamps log datetime msec
+no service timestamps debug datetime msec
+no service password-encryption
+!
+hostname Router
+!
+!
+!
+!
+ip dhcp excluded-address 10.125.224.129
+ip dhcp excluded-address 10.125.224.193
+ip dhcp excluded-address 10.125.225.1
+ip dhcp excluded-address 10.125.224.1
+ip dhcp excluded-address 10.125.225.33
+!
+ip dhcp pool F0
+ network 10.125.224.128 255.255.255.192
+ default-router 10.125.224.129
+ dns-server 10.125.224.3
+ domain-name rcomp-20-21-dk-g4
+ip dhcp pool F1
+ network 10.125.224.192 255.255.255.192
+ default-router 10.125.224.193
+ dns-server 10.125.224.3
+ domain-name rcomp-20-21-dk-g4
+ip dhcp pool WiFi
+ network 10.125.225.0 255.255.255.224
+ default-router 10.125.225.1
+ dns-server 10.125.224.3
+ domain-name rcomp-20-21-dk-g4
+ip dhcp pool VoIP
+ network 10.125.225.32 255.255.255.224
+ default-router 10.125.225.33
+ option 150 ip 10.125.225.33
+ dns-server 10.125.224.3
+ domain-name rcomp-20-21-dk-g4
+!
+!
+!
+ip cef
+no ipv6 cef
+!
+!
+!
+!
+license udi pid CISCO2811/K9 sn FTX10172H0I-
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+spanning-tree mode pvst
+!
+!
+!
+!
+!
+!
+interface FastEthernet0/0
+ ip address 10.125.226.1 255.255.255.128
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/0.1
+ encapsulation dot1Q 305
+ ip address 10.125.224.129 255.255.255.192
+!
+interface FastEthernet0/0.2
+ encapsulation dot1Q 306
+ ip address 10.125.224.193 255.255.255.192
+!
+interface FastEthernet0/0.3
+ encapsulation dot1Q 307
+ ip address 10.125.225.1 255.255.255.224
+!
+interface FastEthernet0/0.4
+ encapsulation dot1Q 308
+ ip address 10.125.224.1 255.255.255.128
+!
+interface FastEthernet0/0.5
+ encapsulation dot1Q 309
+ ip address 10.125.225.33 255.255.255.224
+!
+interface FastEthernet0/1
+ ip address 120.57.101.246 255.255.255.252
+ duplex auto
+ speed auto
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+interface Vlan305
+ mac-address 0001.c76e.8701
+ no ip address
+!
+router ospf 1
+ log-adjacency-changes
+ network 10.125.226.0 0.0.0.127 area 0
+ network 10.125.228.0 0.0.0.127 area 2
+ network 10.125.224.0 0.0.0.127 area 1
+ network 10.125.232.0 0.0.0.127 area 3
+ network 10.125.236.0 0.0.0.127 area 4
+!
+router rip
+!
+ip nat inside source static tcp 10.125.224.3 80 10.125.226.1 80 
+ip nat inside source static tcp 10.125.224.3 53 10.125.226.1 53 
+ip nat inside source static udp 10.125.224.3 53 10.125.226.1 53 
+ip nat inside source static tcp 10.125.224.3 443 10.125.226.1 443 
+ip classless
+ip route 0.0.0.0 0.0.0.0 120.57.101.245 
+!
+ip flow-export version 9
+!
+!
+!
+no cdp run
+!
+!
+!
+!
+!
+!
+dial-peer voice 1 voip
+ destination-pattern 2...
+ session target ipv4:10.125.226.2
+!
+dial-peer voice 2 voip
+ destination-pattern 2...
+ session target ipv4:10.125.229.65
+!
+dial-peer voice 3 voip
+ destination-pattern 3...
+ session target ipv4:10.125.226.3
+!
+dial-peer voice 4 voip
+ destination-pattern 4...
+ session target ipv4:10.125.226.4
+!
+telephony-service
+ max-ephones 20
+ max-dn 20
+ ip source-address 10.125.255.33 port 2000
+ auto assign 1 to 2
+!
+ephone-dn 1
+ number 1001
+!
+ephone-dn 2
+ number 1002
+!
+ephone 1
+ device-security-mode none
+ mac-address 00D0.9720.6DA3
+ type 7960
+ button 1:1
+!
+ephone 2
+ device-security-mode none
+ mac-address 0002.16DE.C460
+ button 1:2
+!
+ephone 3
+ device-security-mode none
+ mac-address 0002.16DE.C468
+!
+ephone 4
+ device-security-mode none
+ mac-address 00E0.F724.ED99
+!
+ephone 5
+ device-security-mode none
+ mac-address 0001.43CA.1A10
+!
+line con 0
+!
+line aux 0
+!
+line vty 0 4
+ login
+!
+!
+!
+end
+
